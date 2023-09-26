@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         阿里云盘批量重命名
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  对某个剧集里面的内容进行批量重命名
 // @author       You
 // @match        https://www.aliyundrive.com/*
@@ -22,11 +22,13 @@
     let parent_file_id = '';
     let token = '';
     let loading = false;
+    let fileName = '';
     XMLHttpRequest.prototype.open = function () {
         this.addEventListener(
             'readystatechange',
             function () {
                 if (this.readyState == 4 && this.status == 200) {
+                    // 列表
                     if (this.responseURL.indexOf('adrive/v3/file/list') > -1) {
                         let { items, next_marker } = JSON.parse(this.response);
                         nextMarker = next_marker;
@@ -42,6 +44,18 @@
                         list = list.filter(
                             item => item.parent_file_id == parent_file_id
                         );
+                    }
+                    // 文件夹
+                    if (
+                        this.responseURL.indexOf('adrive/v1/file/get_path') > -1
+                    ) {
+                        let { items } = JSON.parse(this.response);
+                        if (items.length) {
+                            let { parent_file_id, name } = items[0];
+                            if (parent_file_id !== 'root') {
+                                fileName = name;
+                            }
+                        }
                     }
                 }
             },
@@ -128,6 +142,10 @@
             $('#input-wrap').css({
                 top: 0
             });
+            // 默认赋值文件夹名称
+            if (fileName) {
+                $('#prefix').val(fileName);
+            }
         });
         $('#cancelRename').click(() => {
             if (loading) {
@@ -145,34 +163,49 @@
                 return;
             }
             loading = true;
-            $('#confirmRename').text('重命名中，请不要关闭或刷新页面');
-            $('#confirmRename').css({
-                color: '#999',
-                background: '#ccc',
-                cursor: 'not-allowed'
-            });
-            let prefix = $('#prefix').val();
-            let suffix = $('#suffix').val();
-            let k = 0;
-            const len = sortedOriginalArray.length;
-            for (let i = 0; i < len; i++) {
-                const item = sortedOriginalArray[i];
-                let name = `${prefix}${(i + 1)
-                    .toString()
-                    .padStart(2, '0')}${suffix}.${item.file_extension}`;
-                let body = `{"drive_id":"${item.drive_id}","file_id":"${item.file_id}","name":"${name}","check_name_mode":"refuse"}`;
-                const res = await rename(body);
-                if (res) {
-                    k++;
+            let index = $('#indexNumber').val();
+            // 用户设定序号
+            if (index && index != 0) {
+                if (!/^[0-9]*$/.test(index)) {
+                    alert('序号格式不正确');
+                    loading = false;
+                    return;
+                } else {
+                    reNameFun(parseInt(index));
                 }
-            }
-            if (k == len) {
-                alert('重命名完成');
             } else {
-                alert(`有 ${len - k} 个重命名失败`);
+                reNameFun(1);
             }
-            window.location.reload();
         });
+    }
+    async function reNameFun(index) {
+        $('#confirmRename').text('重命名中，请不要关闭或刷新页面');
+        $('#confirmRename').css({
+            color: '#999',
+            background: '#ccc',
+            cursor: 'not-allowed'
+        });
+        let prefix = $('#prefix').val();
+        let suffix = $('#suffix').val();
+        let k = 0;
+        const len = sortedOriginalArray.length;
+        for (let i = 0; i < len; i++) {
+            const item = sortedOriginalArray[i];
+            let name = `${prefix}${(index + i)
+                .toString()
+                .padStart(2, '0')}${suffix}.${item.file_extension}`;
+            let body = `{"drive_id":"${item.drive_id}","file_id":"${item.file_id}","name":"${name}","check_name_mode":"refuse"}`;
+            const res = await rename(body);
+            if (res) {
+                k++;
+            }
+        }
+        if (k == len) {
+            alert('重命名完成');
+        } else {
+            alert(`有 ${len - k} 个重命名失败`);
+        }
+        window.location.reload();
     }
     function compareEpisodes(a, b) {
         const nameA = a.name;
@@ -313,9 +346,10 @@
                 align-items: center;
                 justify-content: space-between;
             }
-            #rename-box #input-wrap .name-wrap span {
+            #rename-box #input-wrap .name-wrap #indexNumber {
                 width: 60px;
                 text-align: center;
+                margin: 0 10px;
             }
             #rename-box #input-wrap .name-wrap .prefix {
                 height: 40px;
@@ -373,11 +407,11 @@
                     <div>
                         <div class="name-wrap">
                             <input id="prefix" class="prefix" type="text" placeholder="前缀" />
-                            <span>序号</span>
+                            <input id="indexNumber" class="prefix" type="text" placeholder="序号" />
                             <input id="suffix" class="prefix" type="text" placeholder="后缀" />
                         </div>
                         <div class="tip">
-                            <p>序号从 01 开始</p>
+                            <p>序号不填默认从 01 开始，也可以自定义</p>
                             <p>前缀、后缀都可不填</p>
                             <p>例：琅琊榜第 + 01 + 集 => 琅琊榜第01集.mp4</p>
                         </div>
