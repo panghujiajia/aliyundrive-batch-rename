@@ -5,6 +5,7 @@
 // @description  对某个剧集里面的内容进行批量重命名
 // @author       You
 // @match        https://www.aliyundrive.com/*
+// @match        https://www.alipan.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=aliyundrive.com
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.1/jquery.min.js
 // @require      https://cdn.bootcdn.net/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js
