@@ -10,7 +10,7 @@ export default defineConfig({
 			entry: 'src/main.js',
 			userscript: {
 				name: '阿里云盘批量重命名',
-				version: '0.5.3',
+				version: '0.5.4',
 				icon: 'https://img.alicdn.com/imgextra/i2/O1CN011vHpiQ251TseXpbH7_!!6000000007466-2-tps-120-120.png',
 				author: 'https://github.com/panghujiajia',
 				namespace: 'https://github.com/panghujiajia',
