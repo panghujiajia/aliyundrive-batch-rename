@@ -14,7 +14,7 @@ export default defineConfig({
 				icon: 'https://img.alicdn.com/imgextra/i2/O1CN011vHpiQ251TseXpbH7_!!6000000007466-2-tps-120-120.png',
 				author: 'https://github.com/panghujiajia',
 				namespace: 'https://github.com/panghujiajia',
-				match: ['https://www.aliyundrive.com/*', '*.alipan.com/*'],
+				match: ['https://www.aliyundrive.com/*', '*://*.alipan.com/*'],
 				description:
 					'对某个剧集里面的内容进行批量重命名，同时支持对搜索结果进行批量重命名，支持序号重命名、追加重命名、查找替换、正则替换四种模式',
 				license: 'GPL'
