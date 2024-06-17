@@ -152,6 +152,11 @@
 						<el-input v-model="suffix" placeholder="替换内容"/>
 					</el-space>
 				</el-tab-pane>
+        <el-tab-pane :name="5" label="文件格式替换">
+          <el-space :size="-1" style="width: 100%">
+            <el-input v-model="fileExtension" placeholder="替换成"/>
+          </el-space>
+        </el-tab-pane>
 			</el-tabs>
 			<br/>
 			<el-card header="预览" shadow="never">
@@ -216,6 +221,7 @@ let suffix = ref('');
 let needFilter = ref(true);
 let activeTab = ref(1);
 let modifiers = ref([]);
+let fileExtension = ref('');
 
 const data = reactive({
 	list: [], // 原始列表
@@ -238,6 +244,7 @@ function formatIndexNumber(val) {
 
 function formatName(item, i) {
 	let name = '';
+  let newFileExtension = item.file_extension;
 	if (activeTab.value === 1) {
 		let index = '';
 		if (indexNumber.value) {
@@ -269,8 +276,12 @@ function formatName(item, i) {
 			} catch (e) {
 			}
 		}
-	}
-	return `${name}.${item.file_extension}`;
+	} else if (activeTab.value === 5) {
+    let index = item.name.lastIndexOf(`.${item.file_extension}`);
+    name = item.name.slice(0, index);
+    newFileExtension = fileExtension.value;
+  }
+	return `${name}.${newFileExtension}`;
 }
 
 function handleTabChange(val) {
@@ -494,11 +505,11 @@ async function rename(body) {
 		display: block;
 		list-style-type: disc;
 		padding-left: 0;
-		
+
 		li {
 			margin: 1em 0;
 		}
-		
+
 		ul {
 			margin: 1em 0;
 			padding-left: 20px;
@@ -511,11 +522,11 @@ async function rename(body) {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	
+
 	.btn {
 		display: flex;
 		align-items: center;
-		
+
 		span {
 			margin-right: 10px;
 		}
@@ -539,24 +550,24 @@ async function rename(body) {
 	height: 500px;
 	width: 100%;
 	overflow-y: scroll;
-	
+
 	.index-wrap {
 		display: flex;
 		flex-direction: column;
 		margin-right: 14px;
 		text-align: right;
-		
+
 		span {
 			width: 40px;
 			font-size: 14px;
 			border-bottom: 1px solid transparent;
 		}
 	}
-	
+
 	.list-wrap {
 		flex: 1;
 		width: calc(100% - 60px);
-		
+
 		.item {
 			user-select: none;
 			margin: 0;
@@ -569,20 +580,20 @@ async function rename(body) {
 			text-overflow: ellipsis;
 			display: flex;
 			justify-content: space-between;
-			
+
 			&.list-group-item {
 				span {
 					flex: 1;
 				}
 			}
-			
+
 			span {
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
 				border-bottom: 1px dashed #999;
 				width: 30%;
-				
+
 				& + span {
 					flex: 1;
 					margin-left: 50px;
