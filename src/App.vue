@@ -152,6 +152,11 @@
 						<el-input v-model="suffix" placeholder="替换内容"/>
 					</el-space>
 				</el-tab-pane>
+				<el-tab-pane :name="5" label="文件格式替换">
+					<el-space :size="-1" style="width: 100%">
+						<el-input v-model="fileExtension" placeholder="替换成"/>
+					</el-space>
+				</el-tab-pane>
 			</el-tabs>
 			<br/>
 			<el-card header="预览" shadow="never">
@@ -216,6 +221,7 @@ let suffix = ref('');
 let needFilter = ref(true);
 let activeTab = ref(1);
 let modifiers = ref([]);
+let fileExtension = ref('');
 
 const data = reactive({
 	list: [], // 原始列表
@@ -238,6 +244,7 @@ function formatIndexNumber(val) {
 
 function formatName(item, i) {
 	let name = '';
+	let newFileExtension = item.file_extension;
 	if (activeTab.value === 1) {
 		let index = '';
 		if (indexNumber.value) {
@@ -269,8 +276,12 @@ function formatName(item, i) {
 			} catch (e) {
 			}
 		}
+	} else if (activeTab.value === 5) {
+		let index = item.name.lastIndexOf(`.${item.file_extension}`);
+		name = item.name.slice(0, index);
+		newFileExtension = fileExtension.value;
 	}
-	return `${name}.${item.file_extension}`;
+	return `${name}.${newFileExtension}`;
 }
 
 function handleTabChange(val) {
