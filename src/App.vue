@@ -54,7 +54,8 @@
 						>
 							<template #item="{ element }">
 								<li class="item list-group-item">
-									<span>{{ element.name }}</span>
+									<p class="name">{{ element.name }}</p>
+									<span @click="handleRemove(element)" class="remove"></span>
 								</li>
 							</template>
 						</draggable>
@@ -170,13 +171,13 @@
                         </span>
 					</div>
 					<div class="list-wrap">
-						<div
-							v-for="(item, index) in data.sortList"
-							class="item"
-						>
-							<span>{{ item.name }}</span>
-							<span>{{ formatName(item, index) }}</span>
-						</div>
+						<ul class="list-group">
+							<li class="item"
+								v-for="(item, index) in data.sortList">
+								<p class="name">{{ item.name }}</p>
+								<p class="format-name">{{ formatName(item, index) }}</p>
+							</li>
+						</ul>
 					</div>
 				</div>
 			</el-card>
@@ -291,6 +292,10 @@ function handleTabChange(val) {
 	if (val === 1) {
 		prefix.value = parentFileName;
 	}
+}
+
+function handleRemove(item) {
+	data.sortList = data.sortList.filter(i => i.file_id !== item.file_id);
 }
 
 // 过滤非视频文件
@@ -481,11 +486,10 @@ async function rename(body) {
 	color: #fff;
 	cursor: pointer;
 	transition: all 0.3s ease;
-	box-shadow: 0px 3px 8px 0px rgba(28, 28, 32, 0.12),
-	0px 3px 5px 0px rgba(28, 28, 32, 0.04);
+	box-shadow: 0 3px 8px 0 rgba(28, 28, 32, 0.12),
+	0 3px 5px 0 rgba(28, 28, 32, 0.04);
 	padding: 8px 16px;
 	font-weight: 500;
-	cursor: pointer;
 }
 
 /deep/ .el-space__item {
@@ -538,14 +542,13 @@ async function rename(body) {
 }
 
 /deep/ .el-card__body {
-	padding-right: 4px;
-	padding-left: 0;
+	padding: 0;
 }
 
 .sort-wrap {
 	display: flex;
 	line-height: 39px;
-	padding-right: 16px;
+	padding: 0;
 	box-sizing: border-box;
 	height: 500px;
 	width: 100%;
@@ -556,6 +559,7 @@ async function rename(body) {
 		flex-direction: column;
 		margin-right: 14px;
 		text-align: right;
+		padding: 10px 0;
 		
 		span {
 			width: 40px;
@@ -566,8 +570,6 @@ async function rename(body) {
 	
 	.list-wrap {
 		flex: 1;
-		width: calc(100% - 60px);
-		
 		.item {
 			user-select: none;
 			margin: 0;
@@ -582,23 +584,42 @@ async function rename(body) {
 			justify-content: space-between;
 			
 			&.list-group-item {
-				span {
+				display: flex;
+				.name {
 					flex: 1;
+					overflow: clip;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+				}
+				.remove {
+					cursor: pointer;
+					color: #999;
+					font-size: 14px;
+					position: relative;
+					width: 39px;
+					height: 39px;
+					display: flex;
+					&:before {
+						width: 39px;
+						font-weight: 200;
+						content: '×';
+						font-size: 30px;
+						text-align: center;
+						justify-content: center;
+					}
 				}
 			}
 			
-			span {
+			.name, .format-name {
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
+				flex: 1;
 				border-bottom: 1px dashed #999;
-				width: 30%;
-				
-				& + span {
-					flex: 1;
-					margin-left: 50px;
-					border-bottom: 1px solid #dedede;
-				}
+			}
+			.format-name{
+				margin-left: 50px;
+				border-bottom: 1px solid #dedede;
 			}
 		}
 	}
@@ -620,9 +641,18 @@ async function rename(body) {
 .list-group {
 	min-height: 20px;
 	width: 100%;
+	padding: 10px 0;
 }
 
 .list-group-item {
 	cursor: grab;
+}
+::-webkit-scrollbar {
+	width: 5px;
+	background: #fff;
+}
+::-webkit-scrollbar-thumb {
+	background: #f5f5f5;
+	border-radius: 5px;
 }
 </style>
