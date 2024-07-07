@@ -490,6 +490,7 @@ async function rename(body) {
 	0 3px 5px 0 rgba(28, 28, 32, 0.04);
 	padding: 8px 16px;
 	font-weight: 500;
+	z-index: 9999999;
 }
 
 /deep/ .el-space__item {
