@@ -3,10 +3,4 @@
 
 支持序号重命名、追加重命名、查找替换、正则替换四种模式
 
-适合轻度使用
-
-![1.png](./img/1.png)
-![2.png](./img/2.png)
-![3.png](./img/3.png)
-![4.png](./img/4.png)
-![5.png](./img/5.png)
+安装油猴脚本：[aliyundrive-batch-rename.user.js](https://github.com/sherlocknieh/aliyundrive-batch-rename/raw/master/dist/aliyundrive-batch-rename.user.js)
